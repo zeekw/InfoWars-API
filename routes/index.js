@@ -29,7 +29,7 @@ router.get('/', function(req, res, next) {
         var $ThumbnailArticle = cheerio.load(RawThumbnailArticles[i].html());
         var Title = $ThumbnailArticle('.article-content h3 a').text();
         var Subtitle = $ThumbnailArticle('.article-content .entry-subtitle').text();
-        var Category = $ThumbnailArticle('.article-content .category-name').text().replace('\n', '');
+        var Category = $ThumbnailArticle('.article-content .category-name').text();
         var ArticleURL = $ThumbnailArticle('.article-content h3 a').attr('href');
         var ThumbnailImageSmall = $ThumbnailArticle('.thumbnail a img').attr('data-cfsrc');
         var ThumbnailImageFull = ThumbnailImageSmall.slice(0,-12);
@@ -50,7 +50,7 @@ router.get('/', function(req, res, next) {
         var $ThumbnailArticle = cheerio.load(RawThumbnailArticles[i].html());
         var Title = $ThumbnailArticle('.article-content h3 a').text();
         var Subtitle = $ThumbnailArticle('.article-content .entry-subtitle').text();
-        var Category = $ThumbnailArticle('.article-content .category-name').text().replace('\n', '');
+        var Category = $ThumbnailArticle('.article-content .category-name').text();
         var ArticleURL = $ThumbnailArticle('.article-content h3 a').attr('href');
 
         var ArticleData = {
@@ -63,8 +63,8 @@ router.get('/', function(req, res, next) {
       }
 
       var Articles = { WithThumbnails: ArticlesWithThumbnails, WithoutThumbnails: ArticlesWithoutThumbnails };
-      var ArticlesString = JSON.stringify(Articles);
-      res.send('var Articles = ' + ArticlesString);
+      var ArticlesString = JSON.stringify(Articles).replace('\n', '');
+      res.send('var AdministrationArticles = ' + ArticlesString);
     }
   });
 
