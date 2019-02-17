@@ -67,10 +67,7 @@ router.get('/', function(req, res, next) {
       var Articles = { WithThumbnails: ArticlesWithThumbnails, WithoutThumbnails: ArticlesWithoutThumbnails };
       var ArticlesString = JSON.stringify(Articles).replace('\n', '');
 
-      var callback = req.query.callback;
-      var jsonp = callback + '(' + ArticlesString + ');';
-      res.send(jsonp);
-      res.end();
+      res.jsonp(Articles);
     }
   });
 
