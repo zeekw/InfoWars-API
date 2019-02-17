@@ -66,7 +66,7 @@ router.get('/', function(req, res, next) {
 
       var Articles = { WithThumbnails: ArticlesWithThumbnails, WithoutThumbnails: ArticlesWithoutThumbnails };
       var ArticlesString = JSON.stringify(Articles).replace('\n', '');
-      res.json(Articles);
+      res.jsonp(Articles);
     }
   });
 
