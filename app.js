@@ -12,9 +12,9 @@ const http = require('http');
 const https = require('https');
 
 // Certificate
-const privateKey = fs.readFileSync('/etc/letsencrypt/live/infowarsapi.tk/privkey.pem', 'utf8');
-const certificate = fs.readFileSync('/etc/letsencrypt/live/infowarsapi.tk/cert.pem', 'utf8');
-const ca = fs.readFileSync('/etc/letsencrypt/live/infowarsapi.tk/chain.pem', 'utf8');
+const privateKey = fs.readFileSync('../../../etc/letsencrypt/live/infowarsapi.tk/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('../../../etc/letsencrypt/live/infowarsapi.tk/cert.pem', 'utf8');
+const ca = fs.readFileSync('../../../etc/letsencrypt/live/infowarsapi.tk/chain.pem', 'utf8');
 
 const credentials = {
 	key: privateKey,
