@@ -22,7 +22,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/.well-known/acme-challenge/jRnmVHVRi-c-iIVePL3z5WD-_bkUZrlH9MXYqZANxaM', challengeRouter);
+app.use('/.well-known/acme-challenge/gu9Ch8wyVjqXNCSqHGX14qCuThxmFPqXX2gQrdvGS58', challengeRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
