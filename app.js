@@ -7,13 +7,24 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var challengeRouter = require('./routes/SSLChallenge');
 
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+
+// Certificate
+const privateKey = fs.readFileSync('../etc/letsencrypt/live/infowarsapi.tk/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('../etc/letsencrypt/live/infowarsapi.tk/cert.pem', 'utf8');
+const ca = fs.readFileSync('../etc/letsencrypt/live/infowarsapi.tk/chain.pem', 'utf8');
+
+const credentials = {
+	key: privateKey,
+	cert: certificate,
+	ca: ca
+};
+
 var app = express();
 
 var cors = require('cors');
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -32,15 +43,16 @@ app.use(function(req, res, next) {
 // allow CORs
 app.use(cors());
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+// Starting both http & https servers
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+httpServer.listen(80, () => {
+	console.log('HTTP Server running on port 80');
+});
+
+httpsServer.listen(443, () => {
+	console.log('HTTPS Server running on port 443');
 });
 
 module.exports = app;
