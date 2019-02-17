@@ -5,6 +5,8 @@ var request = require('request');
 var cheerio = require('cheerio');
 var xml = require('xml');
 
+var requestNoEncoding = require('request').defaults({ encoding: null });
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
@@ -22,27 +24,6 @@ router.get('/', function(req, res, next) {
           RawNonThumbnailArticles.push(element);
         }
       });
-
-      var ArticlesWithThumbnails = [];
-      //for each one with a thumbnail
-      for(i=0;i<RawThumbnailArticles.length;i++){
-        var $ThumbnailArticle = cheerio.load(RawThumbnailArticles[i].html());
-        var Title = $ThumbnailArticle('.article-content h3 a').text();
-        var Subtitle = $ThumbnailArticle('.article-content .entry-subtitle').text();
-        var Category = $ThumbnailArticle('.article-content .category-name').text();
-        var ArticleURL = $ThumbnailArticle('.article-content h3 a').attr('href');
-        var ThumbnailImageSmall = $ThumbnailArticle('.thumbnail a img').attr('data-cfsrc');
-        var ThumbnailImageFull = ThumbnailImageSmall.slice(0,-12);
-
-        var ArticleData = {
-          Title: Title,
-          Subtitle: Subtitle,
-          Category: Category,
-          ArticleURL: ArticleURL,
-          ThumbnailImage: ThumbnailImageFull
-        }
-        ArticlesWithThumbnails.push(ArticleData);
-      }
 
       var ArticlesWithoutThumbnails = [];
       //for each one with a thumbnail
@@ -62,9 +43,39 @@ router.get('/', function(req, res, next) {
         ArticlesWithoutThumbnails.push(ArticleData);
       }
 
-      var Articles = { WithThumbnails: ArticlesWithThumbnails, WithoutThumbnails: ArticlesWithoutThumbnails };
-      var ArticlesString = JSON.stringify(Articles).replace('\n', '');
-      res.json(Articles);
+      var ArticlesWithThumbnails = [];
+      //for each one with a thumbnail
+      for(i=0;i<RawThumbnailArticles.length;i++){
+        var $ThumbnailArticle = cheerio.load(RawThumbnailArticles[i].html());
+        var Title = $ThumbnailArticle('.article-content h3 a').text();
+        var Subtitle = $ThumbnailArticle('.article-content .entry-subtitle').text();
+        var Category = $ThumbnailArticle('.article-content .category-name').text();
+        var ArticleURL = $ThumbnailArticle('.article-content h3 a').attr('href');
+        var ThumbnailImageURLSmall = $ThumbnailArticle('.thumbnail a img').attr('data-cfsrc');
+        var ThumbnailImageURLFull = ThumbnailImageURLSmall.slice(0,-12) + '.jpg';
+        requestNoEncoding.get(ThumbnailImageURLFull, function (error, response, body) {
+          if (!error) {
+              var BinaryData = "data:" + response.headers["content-type"] + ";base64," + new Buffer(body).toString('base64');
+              var ThumbnailBinary = BinaryData;
+              var ArticleData = {
+                Title: Title,
+                Subtitle: Subtitle,
+                Category: Category,
+                ArticleURL: ArticleURL,
+                ThumbnailImage: ThumbnailBinary
+              }
+              ArticlesWithThumbnails.push(ArticleData);
+              if(ArticlesWithThumbnails.length == RawThumbnailArticles.length){
+                var Articles = { WithThumbnails: ArticlesWithThumbnails, WithoutThumbnails: ArticlesWithoutThumbnails };
+                var ArticlesString = JSON.stringify(Articles).replace('\n', '');
+                console.log('hello');
+                res.json(Articles);
+              }
+          } else {
+            console.log(error);
+          }
+        });
+      }
     }
   });
 
