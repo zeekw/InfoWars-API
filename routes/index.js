@@ -53,29 +53,20 @@ router.get('/', function(req, res, next) {
         var ArticleURL = $ThumbnailArticle('.article-content h3 a').attr('href');
         var ThumbnailImageURLSmall = $ThumbnailArticle('.thumbnail a img').attr('data-cfsrc');
         var ThumbnailImageURLFull = ThumbnailImageURLSmall.slice(0,-12) + '.jpg';
-        requestNoEncoding.get(ThumbnailImageURLFull, function (error, response, body) {
-          if (!error) {
-              var BinaryData = "data:" + response.headers["content-type"] + ";base64," + new Buffer(body).toString('base64');
-              var ThumbnailBinary = BinaryData;
-              var ArticleData = {
-                Title: Title,
-                Subtitle: Subtitle,
-                Category: Category,
-                ArticleURL: ArticleURL,
-                ThumbnailImage: ThumbnailBinary
-              }
-              ArticlesWithThumbnails.push(ArticleData);
-              if(ArticlesWithThumbnails.length == RawThumbnailArticles.length){
-                var Articles = { WithThumbnails: ArticlesWithThumbnails, WithoutThumbnails: ArticlesWithoutThumbnails };
-                var ArticlesString = JSON.stringify(Articles).replace('\n', '');
-                console.log('hello');
-                res.json(Articles);
-              }
-          } else {
-            console.log(error);
-          }
-        });
+
+        var ArticleData = {
+          Title: Title,
+          Subtitle: Subtitle,
+          Category: Category,
+          ArticleURL: ArticleURL,
+          ThumbnailImage: ThumbnailImageURLFull
+        }
+        ArticlesWithThumbnails.push(ArticleData);
       }
+
+      var Articles = { WithThumbnails: ArticlesWithThumbnails, WithoutThumbnails: ArticlesWithoutThumbnails };
+      var ArticlesString = JSON.stringify(Articles).replace('\n', '');
+      res.json(Articles);
     }
   });
 
